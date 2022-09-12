@@ -1,11 +1,16 @@
-import React, {memo, useCallback} from 'react';
+import React, { memo, useCallback } from 'react';
 import Classnames from 'classnames';
-import {PrizeoutOffer, PrizeoutOfferSettings, selectedOfferPosition, updateSelectedOfferPosition} from '../../../../../slices/offers-slice';
+import {
+    PrizeoutOffer,
+    PrizeoutOfferSettings,
+    selectedOfferPosition,
+    updateSelectedOfferPosition,
+} from '../../../../../slices/offers-slice';
 import { OfferGiftCard } from '../offer-gift-card/offer-gift-card';
 
 import './vertical-offers.less';
-import {useAppSelector} from "../../../../../hooks";
-import {useDispatch} from "react-redux";
+import { useAppSelector } from '../../../../../hooks';
+import { useDispatch } from 'react-redux';
 
 interface OfferView {
     offers: PrizeoutOffer[];
@@ -21,10 +26,12 @@ const VerticalOffers: React.FC<OfferView> = ({ offers, viewSettings, parentIndex
     const dispatch = useDispatch();
 
     const offerClickHandler = useCallback((childIndex: number) => {
-        dispatch(updateSelectedOfferPosition({
-            parentIndex,
-            childIndex
-        }))
+        dispatch(
+            updateSelectedOfferPosition({
+                childIndex,
+                parentIndex,
+            }),
+        );
     }, []);
 
     const returnOffers = () => {

@@ -1,33 +1,33 @@
-import {useCallback, useState} from "react";
-import {GiftCard} from "../../slices/checkout-slice";
+import { useCallback, useState } from 'react';
+import { GiftCard } from '../../slices/checkout-slice';
 
 export type PrizeOutPayload = {
-    checkout_value_id: string,
-    cost_in_cents: number,
-    name: string,
-    value_in_cents: number,
+    checkout_value_id: string;
+    cost_in_cents: number;
+    name: string;
+    value_in_cents: number;
 };
 
 export type PrizeOutErrorPayload = {
-    title: string,
-    message: string,
-    confirmText: string,
+    title: string;
+    message: string;
+    confirmText: string;
 };
 
 export type UsePrizeOutCheckoutProps = {
-    onSuccess?: (result: any) => void,
-    onError?: (error: PrizeOutErrorPayload) => void,
+    onSuccess?: (result: any) => void;
+    onError?: (error: PrizeOutErrorPayload) => void;
 };
 
 export type UsePrizeOutCheckoutReturn = {
-    prizeOut: (payload: PrizeOutPayload) => Promise<void>,
-    isPrizing: boolean,
+    prizeOut: (payload: PrizeOutPayload) => Promise<void>;
+    isPrizing: boolean;
 };
 
 const unknownErrorPayload: PrizeOutErrorPayload = {
-    title: 'Oops!',
-    message: 'Something went wrong',
     confirmText: 'Ok',
+    message: 'Something went wrong',
+    title: 'Oops!',
 };
 
 export function usePrizeOutCheckout(props: UsePrizeOutCheckoutProps): UsePrizeOutCheckoutReturn {
@@ -46,11 +46,11 @@ export function usePrizeOutCheckout(props: UsePrizeOutCheckoutProps): UsePrizeOu
 
     const checkout = async (body: GiftCard) => {
         try {
-            return new Promise((res, rej) => {
-                setTimeout(() => res(body), 2000)
-            })
+            return new Promise((res) => {
+                setTimeout(() => res(body), 2000);
+            });
         } catch (err) {
-            throw new Error("error.unknown");
+            throw new Error('error.unknown');
         }
     };
 
@@ -63,13 +63,13 @@ export function usePrizeOutCheckout(props: UsePrizeOutCheckoutProps): UsePrizeOu
                 setSubmitting(true);
                 const body = {
                     checkout_value_id: payload.checkout_value_id,
-                    name: payload.name.trim(),
                     cost_in_cents: payload.cost_in_cents,
+                    name: payload.name.trim(),
                     value_in_cents: payload.value_in_cents,
                 };
                 const response = await checkout(body);
                 if (response) {
-                    await finishWithSuccess({success: true});
+                    await finishWithSuccess({ success: true });
                 } else {
                     finishWithError(unknownErrorPayload);
                 }
@@ -81,7 +81,7 @@ export function usePrizeOutCheckout(props: UsePrizeOutCheckoutProps): UsePrizeOu
     );
 
     return {
-        prizeOut: handlePrizeOut,
         isPrizing: isSubmitting,
+        prizeOut: handlePrizeOut,
     };
 }

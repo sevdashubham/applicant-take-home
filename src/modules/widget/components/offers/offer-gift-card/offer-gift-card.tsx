@@ -11,8 +11,11 @@ interface OfferGiftCardProps {
     isSelected: boolean;
 }
 
-export const OfferGiftCard: React.FC<OfferGiftCardProps> = ({ offer, onClickHandler, isSelected }): React.ReactElement => {
-
+export const OfferGiftCard: React.FC<OfferGiftCardProps> = ({
+    offer,
+    onClickHandler,
+    isSelected,
+}): React.ReactElement => {
     const firstGiftCard = offer.giftcard_list[0];
     const offerType = firstGiftCard.display_monetary_bonus ? 'monetary' : 'percentage';
     const offerValue = firstGiftCard.display_bonus;

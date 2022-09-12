@@ -3,7 +3,7 @@ import Classnames from 'classnames';
 import { PrizeoutOfferValueOptions } from '../../../slices/offers-slice';
 
 import './checkout-items.less';
-import {cents_to_dollar} from "../../../utils/functions";
+import { cents_to_dollar } from '../../../utils/functions';
 
 interface CheckoutItemsProps {
     giftCard: PrizeoutOfferValueOptions;
@@ -11,8 +11,11 @@ interface CheckoutItemsProps {
     isSelected: boolean;
 }
 
-export const CheckoutItems: React.FC<CheckoutItemsProps> = ({ giftCard, onClickHandler, isSelected }): React.ReactElement => {
-
+export const CheckoutItems: React.FC<CheckoutItemsProps> = ({
+    giftCard,
+    onClickHandler,
+    isSelected,
+}): React.ReactElement => {
     const classes: string = Classnames('checkout-item', {
         'selected-offer-gift-card': isSelected,
         'unselected-offer-gift-card': !isSelected,

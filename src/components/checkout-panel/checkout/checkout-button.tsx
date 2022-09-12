@@ -1,21 +1,23 @@
-import React, {useCallback} from 'react';
+import React, { useCallback } from 'react';
 import { Button } from '../../common';
 
 import './checkout-button.less';
-import {usePrizeOutCheckout} from "../../../utils/hooks/usePrizeOutCheckout";
-import {useAppSelector} from "../../../hooks";
-import {selectedGC, prizeOutGiftCard} from "../../../slices/checkout-slice";
-import {useDispatch} from "react-redux";
+import { usePrizeOutCheckout } from '../../../utils/hooks/usePrizeOutCheckout';
+import { useAppSelector } from '../../../hooks';
+import { selectedGC, prizeOutGiftCard } from '../../../slices/checkout-slice';
+import { useDispatch } from 'react-redux';
 
 interface CheckoutButtonProps {
     isValid: boolean;
 }
 
-const CheckoutButton: React.FC<CheckoutButtonProps> = ({isValid}): React.ReactElement => {
+const CheckoutButton: React.FC<CheckoutButtonProps> = ({ isValid }): React.ReactElement => {
     const selectedGiftCard = useAppSelector(selectedGC);
     const dispatch = useDispatch();
     const handlePrizeOutSuccess = useCallback((response) => {
-        dispatch(prizeOutGiftCard());
+        if (response) {
+            dispatch(prizeOutGiftCard());
+        }
     }, []);
 
     const { prizeOut, isPrizing } = usePrizeOutCheckout({
@@ -30,7 +32,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({isValid}): React.ReactEl
             return 'Prizeout Gift Card';
         }
         return 'Select Gift Card';
-    }
+    };
 
     const buttonHandler = () => {
         prizeOut(selectedGiftCard);
