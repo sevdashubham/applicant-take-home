@@ -29,3 +29,7 @@ yarn-error.log*
 secrets.env
 
 local.Dockerfile
+
+# IntelliJ
+
+.idea

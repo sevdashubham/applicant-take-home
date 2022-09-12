@@ -1,14 +1,21 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { RootState } from '../store';
+import {arrayHasIndex} from "../utils/functions";
 
 // Define a type for the slice state
 export interface OffersState {
-    offers?: PrizeoutOffers;
+    offersList?: PrizeoutOffers;
+    selectedPosition: offerPositions;
+    selectedGiftCards?: PrizeoutOfferSelectedGC;
 }
+
+const DEFAULT_SELECTED_INDEX = {parentIndex: -1, childIndex: -1};
+const emptyGiftCard = [] as PrizeoutOfferValueOptions[];
+const DEFAULT_SELECTED_GC = {name: '',  giftcard_list: emptyGiftCard, image_url: ''};
 
 // Define the initial state
 export const offersInitialState: OffersState = {
-    offers: [
+    offersList: [
         {
           data: [
             {
@@ -43,7 +50,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Magazines.com',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -72,7 +79,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: '1-800-PetSupplies',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -94,7 +101,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'GCodes® Verizon Prepaid Plan $15 + $3 Taxes & Fees',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -130,7 +137,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Unlimited eBooks',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -159,7 +166,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Ganz Webkinz',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -230,7 +237,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Global Hotel Card US',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -280,7 +287,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Sam\'s Club',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -316,7 +323,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'IMVU',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -366,7 +373,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Facebook Game Card',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -388,7 +395,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'GCodes® Verizon Prepaid Plan $30 + $6 Taxes & Fees',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -410,7 +417,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Wine Enthusiast',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -581,7 +588,7 @@ export const offersInitialState: OffersState = {
               logomark_url: null,
               name: 'Wargaming.net World of Warship',
               stores: [],
-              
+
               support_creative_list: [],
               tag: null
             },
@@ -642,6 +649,8 @@ export const offersInitialState: OffersState = {
           type: 'vertical-offers'
         }
       ],
+    selectedPosition: DEFAULT_SELECTED_INDEX,
+    selectedGiftCards: DEFAULT_SELECTED_GC
 };
 
 type PrizeoutOffers = PrizeoutOfferViews[];
@@ -651,6 +660,12 @@ export type PrizeoutOfferViews = {
     settings?: PrizeoutOfferSettings;
     type: 'horizontal-offers' | 'vertical-offers';
 };
+
+export type PrizeoutOfferSelectedGC = {
+    name: string;
+    giftcard_list: PrizeoutOfferValueOptions[];
+    image_url: string;
+}
 
 export type PrizeoutOfferSettings = {
     subtitle?: string;
@@ -671,7 +686,7 @@ export type PrizeoutOffer = {
     tag: string;
 };
 
-type PrizeoutOfferValueOptions = {
+export type PrizeoutOfferValueOptions = {
     checkout_value_id: string;
     cost_in_cents: number;
     display_bonus?: number;
@@ -683,12 +698,46 @@ type OffersRequest = {
     prizeoutSessionId: string;
 };
 
+type offerPositions = {
+  parentIndex: number;
+  childIndex: number;
+}
+
 export const offersSlice = createSlice({
     initialState: offersInitialState,
     name: 'offers',
-    reducers: {},
+    reducers: {
+      updateSelectedOfferPosition(state, action: PayloadAction<offerPositions>) {
+        const {parentIndex, childIndex} = action.payload;
+        if (parentIndex === state.selectedPosition.parentIndex && childIndex === state.selectedPosition.childIndex) {
+          state.selectedPosition = action.payload;
+          state.selectedGiftCards = DEFAULT_SELECTED_GC;
+        } else {
+          state.selectedPosition = action.payload;
+          if (arrayHasIndex(state.offersList, parentIndex)) {
+            if (arrayHasIndex(state.offersList[parentIndex].data, childIndex)) {
+              const {name, image_url, giftcard_list} = state.offersList[parentIndex].data[childIndex];
+              state.selectedGiftCards = {
+                name,
+                image_url,
+                giftcard_list
+              };
+            }
+          }
+        }
+      },
+      clearSelectedOffer(state) {
+        state.selectedPosition = DEFAULT_SELECTED_INDEX;
+        state.selectedGiftCards = DEFAULT_SELECTED_GC;
+      }
+    },
 });
 
-export const selectOffers = ({ offers }: RootState): PrizeoutOffers => offers.offers;
+export const selectOffers = ({ offers }: RootState): PrizeoutOffers => offers.offersList;
+export const selectedOfferPosition = ({ offers : { selectedPosition } }: RootState): offerPositions => selectedPosition;
+export const selectedOfferGiftCards = ({ offers: { selectedGiftCards } }: RootState): PrizeoutOfferSelectedGC => selectedGiftCards;
+
+// Action creators are generated for each case reducer function
+export const { updateSelectedOfferPosition, clearSelectedOffer } = offersSlice.actions
 
 export default offersSlice.reducer;
